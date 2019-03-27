@@ -1,0 +1,30 @@
+{
+  "name": "tls-session-cache",
+  "version": "1.0.1",
+  "description": "Enable TLS session resumption (caching)",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/.bin/tap test --jobs=10 --coverage-report=html --no-browser"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fijimunkii/node-tls-session-cache.git"
+  },
+  "keywords": [
+    "tls",
+    "session",
+    "resumption",
+    "resume",
+    "tickets"
+  ],
+  "author": "Harrison Powers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fijimunkii/node-tls-session-cache/issues"
+  },
+  "homepage": "https://github.com/fijimunkii/node-tls-session-cache#readme",
+  "devDependencies": {
+    "pem": "^1.14.2",
+    "tap": "^12.6.1"
+  }
+}
