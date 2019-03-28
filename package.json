@@ -1,6 +1,6 @@
 {
   "name": "tls-session-cache",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Enable TLS session resumption (caching)",
   "main": "index.js",
   "scripts": {
@@ -26,5 +26,8 @@
   "devDependencies": {
     "pem": "^1.14.2",
     "tap": "^12.6.1"
+  },
+  "dependencies": {
+    "quick-lru": "^3.0.0"
   }
 }

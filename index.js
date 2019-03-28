@@ -1,5 +1,6 @@
 // store tls session tickets for session resumption
 // TODO: add redis
+const QuickLRU = require('quick-lru');
 
 module.exports = (server, options) => {
 
@@ -14,29 +15,16 @@ module.exports = (server, options) => {
   if (!options.hasOwnProperty('maxCachedSessions')) {
     options.maxCachedSessions = 100;
   }
-  const tlsSessionStore = {};
-  const tlsSessionList = [];
+
+  const lru = new QuickLRU({maxSize: options.maxCachedSessions});
 
   server.on('newSession', (id, data, cb) => {
-    if (options.maxCachedSessions === 0) {
-      return;
-    }
-    const key = id.toString('hex');
-    if (tlsSessionStore[key]) {
-      tlsSessionStore[key] = data;
-      return;
-    }
-    if (tlsSessionList.length >= options.maxCachedSessions) {
-      const oldKey = tlsSessionList.shift();
-      delete tlsSessionStore[oldKey];
-    }
-    tlsSessionList.push(key);
-    tlsSessionStore[key] = data; 
+    lru.set(id.toString('hex'),data);
     cb();
   });
 
   server.on('resumeSession', (id, cb) => {
-    cb(null, tlsSessionStore[id.toString('hex')] || null);
+    cb(null, lru.get(id.toString('hex')) || null);
   });
 
 };
