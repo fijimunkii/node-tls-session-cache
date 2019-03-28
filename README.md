@@ -11,7 +11,7 @@ Just pass in your server to get running:
 
 ```js
 const server = require('https').createServer(httpsConfig, (req,res) => res.end('OK'));
-server.listen(5555);
+server.listen(443);
 
 require('tls-session-cache')(server);
 ```
@@ -21,7 +21,7 @@ Server can be https, tls
 All available options:
 ```js
 require('tls-session-cache')(server, {
-  maxCachedSessions = 555 // number of sessions to hold in cache (default 100)
+  maxCachedSessions = 555 // number of sessions to hold in lru cache (default 100)
 });
 ```
 
