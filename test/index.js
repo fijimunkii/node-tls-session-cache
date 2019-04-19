@@ -4,6 +4,8 @@ const https = require('https');
 const agent = new https.Agent();
 const clientSessions = {};
 const PORT = 5555;
+const autocannon = require('autocannon');
+const autocannonConfig = { url: `https://localhost:${PORT}`, connections: 10, duration: 1 };
 
 function request(url, name) {
   return new Promise(resolve => {
@@ -21,15 +23,17 @@ module.exports = async t => {
   // Disable TLS session tickets so we can properly test session cache
   httpsConfig.secureOptions = require('constants').SSL_OP_NO_TICKET;
 
-  const middleware = (req, res) => {
-    if (req.url === '/drop-key') {
-      server.setTicketKeys(crypto.randomBytes(48));
-    }
-    res.end('OK');
+  const httpResponse = (req,res) => {
+    const body = 'OK';
+    res.writeHead(200, {
+      'Content-Length': Buffer.byteLength(body),
+      'Content-Type': 'text/plain'
+    });
+    res.end(body);
   };
 
-  const vanillaServer = https.createServer(httpsConfig, middleware);
-  const httpsServer = https.createServer(httpsConfig, middleware);
+  const vanillaServer = https.createServer(httpsConfig, httpResponse);
+  const httpsServer = https.createServer(httpsConfig, httpResponse);
   tlsSessionCache(httpsServer);
 
   t.test('vanilla https server does not reuse tls session', async (t) => {
@@ -49,6 +53,19 @@ module.exports = async t => {
   });
 
   t.test('tls server does reuse tls session');
+
+  t.test('load test', async (t) => {
+    await new Promise(resolve => {
+      httpsServer.listen(PORT);
+      autocannon(autocannonConfig, (err, result) => {
+        t.notOk(err);
+        t.same(result.non2xx, 0);
+        t.notEqual(result['2xx'], 0);
+        httpsServer.close();
+        resolve();
+      });
+    });
+  });
 
 };
 
