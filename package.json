@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/fijimunkii/node-tls-session-cache#readme",
   "devDependencies": {
+    "autocannon": "^3.2.1",
     "pem": "^1.14.2",
     "tap": "^12.6.1"
   },
